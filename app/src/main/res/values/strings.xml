@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">WiLights</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="mainlist">
+        <item>HOME</item>
+        <item>Wifi Config</item>
+        <item>Setting</item>
+
+
+    </string-array>
+    <string name="wifi_5g_message">Device dose not support 5G Wifi</string>
+    <string name="location_disable_message">Location(GPS) is disable</string>
+    <string name="ssid_title">SSID: </string>
+    <string name="bssid_title">BSSID: </string>
+    <string name="password_title">Password: </string>
+    <string name="device_count_title">Device count: </string>
+    <string name="package_broadcast">Broadcast</string>
+    <string name="package_multicast">Multicast</string>
+    <string name="confirm">Confirm</string>
+    <string name="drawer_open_content_desc">open</string>
+    <string name="drawer_close_content_desc">close</string>
+
+</resources>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/buttombackground"
+
+    >
+
+
+    <ImageView
+
+        android:id="@+id/pop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:background="@color/buttombackground"
+        android:src="@drawable/baseline_settings_black_36"
+        android:text="sasa"
+        android:textColor="@color/textcolor" />
+
+
+        <TextView
+
+            android:id="@+id/nodenametxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="NodeName"
+            android:textColor="@color/textcolor"
+            android:textSize="35dp" />
+
+
+
+
+
+
+
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <ToggleButton
+                android:textSize="22dp"
+
+                android:background="@color/buttombackground"
+                android:drawableTop="@drawable/selector_toggle_button"
+                android:textColor="@color/textcolor"     android:layout_height="150dp"
+                android:id="@+id/btn1"
+
+                android:text="Switch 1"
+
+                android:layout_width="wrap_content"
+                 />
+
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <ToggleButton
+                android:textSize="22dp"
+                android:background="@color/buttombackground"
+
+                android:textColor="@color/textcolor"    android:id="@+id/btn2"
+                android:text="Switch 1"
+                android:layout_width="wrap_content"
+                android:drawableTop="@drawable/selector_toggle_button"
+                android:layout_height="150dp" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <ToggleButton
+                android:textSize="22dp"
+
+                android:textColor="@color/textcolor"    android:background="@color/buttombackground"
+                android:id="@+id/btn3"
+                android:text="Switch 3"
+                android:layout_width="wrap_content"
+                android:drawableTop="@drawable/selector_toggle_button"
+                android:layout_height="150dp"/>
+
+        </LinearLayout>
+        <LinearLayout
+
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <ToggleButton
+                android:textSize="22dp"
+                android:background="@color/buttombackground"
+                android:textColor="@color/textcolor"
+                android:id="@+id/btn4"
+                android:text="Switch 4"
+                android:layout_width="wrap_content"
+                android:drawableTop="@drawable/selector_toggle_button"
+                android:layout_height="150dp" />
+
+        </LinearLayout
+            >
+
+
+
+
+    </LinearLayout>
+
+
+
+
+
+
+</LinearLayout>
