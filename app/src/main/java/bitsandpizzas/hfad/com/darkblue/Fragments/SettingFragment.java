@@ -38,7 +38,12 @@ public class SettingFragment extends Fragment {
 editText=view.findViewById(R.id.txthubid);
 btn=view.findViewById(R.id.btn_enterid_fragment_setting);
 
+btn.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
 
+    }
+});
     return view;
     }
 
