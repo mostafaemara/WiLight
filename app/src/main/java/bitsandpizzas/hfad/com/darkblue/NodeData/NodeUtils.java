@@ -6,10 +6,10 @@ public class NodeUtils {
     final  public  static String NODE_INF_PUBLISH_TOPIC ="base/app/handshake";
 
 
-    final  public  static int NODE_INFO_MESSEGE_ID =1993;
+    final  public  static int NODE_INFO_MESSEGE_ID =500;
     final  public  static int NODE_HANDSHAKE_MESSEGE_ID =3;
 
-    final  public  static int NODE_STATE_MESSEGE=12;
+    final  public  static int NODE_STATE_MESSEGE=500;
     final  public  static int NODE_MESSEGE_COMMAND_ID_VALUE=120;
     final  public  static String MESSEGE_ID_KEY ="messegeid";
     final  public  static String NODE_ID_KEY ="nodeid";

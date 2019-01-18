@@ -10,10 +10,12 @@ import com.rafakob.nsdhelper.NsdListener;
 import com.rafakob.nsdhelper.NsdService;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
+
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -44,7 +46,7 @@ static NsdHelper mNsdHelper;
 
     public static MqttAndroidClient localMqttAndroidClient = null;
 
-    final String LOCAL_CLIENT_ID = UUID.randomUUID().toString();
+    final String LOCAL_CLIENT_ID =UUID.randomUUID().toString();
 
    private Context mContext;
    String getLocalServerIp() {
@@ -114,8 +116,11 @@ static NsdHelper mNsdHelper;
    }
    void nsdServiceStart(){
 
+       if(mNsdHelper!=null) {
 
-       mNsdHelper.startDiscovery("_darkblue._tcp.");
+           mNsdHelper.startDiscovery("_darkblue._tcp.");
+       }
+
 
 
    }
@@ -180,11 +185,13 @@ localMqttStart( nsdService.getHostIp());
 
     }
     public static void setCallback(MqttCallbackExtended callback) {
-        localMqttAndroidClient.setCallback(callback);
-
+       if(localMqttAndroidClient!=null) {
+           localMqttAndroidClient.setCallback(callback);
+       }
     }
 
     public static void connect(){
+       if(localMqttAndroidClient!=null){
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setKeepAliveInterval(10);
         mqttConnectOptions.setAutomaticReconnect(true);
@@ -193,71 +200,65 @@ localMqttStart( nsdService.getHostIp());
         mqttConnectOptions.setPassword("asas".toCharArray());
 
 
-        if(localMqttAndroidClient.isConnected()){
 
-            try {
-                localMqttAndroidClient.disconnect();
-            } catch (MqttException e) {
-                e.printStackTrace();
+
+
+    try {
+
+        localMqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
+            @Override
+            public void onSuccess(IMqttToken asyncActionToken) {
+                Log.w("MQTT", "Mqtt Connected onSuccess ");
+
+                    localMqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());
+
+                subscribeToTopic(NodeUtils.NODE_INFO_SUSCRIBE_TOPIC);
             }
 
-        }
-
-
-        try {
-
-            localMqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    Log.w("MQTT", "Mqtt Connected onSuccess " );
-                    DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
-                    disconnectedBufferOptions.setBufferEnabled(true);
-                    disconnectedBufferOptions.setBufferSize(100);
-                    disconnectedBufferOptions.setPersistBuffer(false);
-                    disconnectedBufferOptions.setDeleteOldestMessages(false);
-                    localMqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
-                    subscribeToTopic(NodeUtils.NODE_INFO_SUSCRIBE_TOPIC);
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    mNsdHelper.startDiscovery("_darkblue._tcp.");
+            @Override
+            public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                mNsdHelper.startDiscovery("_darkblue._tcp.");
 
                 //    Log.w("Mqtt", "Failed to connect to: " +cloudServerUri + exception.toString());
-                }
-            });
+            }
+        });
 
 
-        } catch (MqttException ex){
-            ex.printStackTrace();
-        }
+    } catch (MqttException ex) {
+        ex.printStackTrace();
+    }
+}
     }
 
 
     private static void subscribeToTopic(String topic) {
-        try {
-            localMqttAndroidClient.subscribe(topic, 0, null, new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    Log.w("MQTT", "Mqtt on Subscribed On Succes" );
-                }
+        if (localMqttAndroidClient != null) {
+            try {
+                localMqttAndroidClient.subscribe(topic, 0, null, new IMqttActionListener() {
+                    @Override
+                    public void onSuccess(IMqttToken asyncActionToken) {
+                        Log.w("MQTT", "Mqtt on Subscribed On Succes");
+                    }
 
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Log.w("Mqtt", "Subscribed fail!");
-                }
-            });
+                    @Override
+                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                        Log.w("Mqtt", "Subscribed fail!");
+                    }
+                });
 
-        } catch (MqttException ex) {
-            System.err.println("Exception whilst subscribing");
-            ex.printStackTrace();
+            } catch (MqttException ex) {
+                System.err.println("Exception whilst subscribing");
+                ex.printStackTrace();
+            }
         }
     }
 
 
     public static void publishMessage(
+
             @NonNull String msg, int qos, @NonNull String topic)
             throws MqttException, UnsupportedEncodingException {
+        if(localMqttAndroidClient!=null){
         byte[] encodedPayload = new byte[0];
         encodedPayload = msg.getBytes("UTF-8");
         MqttMessage message = new MqttMessage(encodedPayload);
@@ -266,12 +267,11 @@ localMqttStart( nsdService.getHostIp());
         message.setQos(qos);
         localMqttAndroidClient.publish(topic, message);
     }
-
-
-    public MqttAndroidClient getCloudMqttAndroidClient() {
-        return cloudMqttAndroidClient;
     }
-    private DisconnectedBufferOptions getDisconnectedBufferOptions() {
+
+
+
+    public static DisconnectedBufferOptions getDisconnectedBufferOptions() {
         DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
         disconnectedBufferOptions.setBufferEnabled(true);
         disconnectedBufferOptions.setBufferSize(100);
@@ -347,98 +347,93 @@ localMqttStart( nsdService.getHostIp());
         }
 
         public static void setCallback(MqttCallbackExtended callback) {
-            cloudMqttAndroidClient.setCallback(callback);
-
+            if(cloudMqttAndroidClient!=null) {
+                cloudMqttAndroidClient.setCallback(callback);
+            }
         }
 
-        public static void connect(){
-            MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
-            mqttConnectOptions.setKeepAliveInterval(10);
-            mqttConnectOptions.setAutomaticReconnect(true);
-            mqttConnectOptions.setCleanSession(true);
-            mqttConnectOptions.setUserName(username);
-            mqttConnectOptions.setPassword(password.toCharArray());
+        public static void connect() {
+            if (cloudMqttAndroidClient != null) {
+                MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
+                mqttConnectOptions.setKeepAliveInterval(10);
+                mqttConnectOptions.setAutomaticReconnect(true);
+                mqttConnectOptions.setCleanSession(true);
+                mqttConnectOptions.setUserName(username);
+                mqttConnectOptions.setPassword(password.toCharArray());
 
 
-            if(cloudMqttAndroidClient.isConnected()){
+
+
 
                 try {
-                    cloudMqttAndroidClient.disconnect();
-                } catch (MqttException e) {
-                    e.printStackTrace();
+
+                    cloudMqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
+                        @Override
+                        public void onSuccess(IMqttToken asyncActionToken) {
+                            Log.w("MQTT", "Mqtt Connected onSuccess ");
+
+
+                                cloudMqttAndroidClient.setBufferOpts(getDisconnectedBufferOptions());
+
+                            subscribeToTopic(NodeUtils.NODE_INFO_SUSCRIBE_TOPIC);
+                        }
+
+                        @Override
+                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+
+                            Log.w("Mqtt", "Failed to connect to: " + cloudServerUri + exception.toString());
+                            connect();
+                        }
+                    });
+
+
+                } catch (MqttException ex) {
+                    ex.printStackTrace();
                 }
-
-            }
-
-
-            try {
-
-                cloudMqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
-                    @Override
-                    public void onSuccess(IMqttToken asyncActionToken) {
-                        Log.w("MQTT", "Mqtt Connected onSuccess " );
-                        DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
-                        disconnectedBufferOptions.setBufferEnabled(true);
-                        disconnectedBufferOptions.setBufferSize(100);
-                        disconnectedBufferOptions.setPersistBuffer(false);
-                        disconnectedBufferOptions.setDeleteOldestMessages(false);
-                        cloudMqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
-                        subscribeToTopic(NodeUtils.NODE_INFO_SUSCRIBE_TOPIC);
-                    }
-
-                    @Override
-                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-
-                        Log.w("Mqtt", "Failed to connect to: " +cloudServerUri + exception.toString());
-                        connect();
-                    }
-                });
-
-
-            } catch (MqttException ex){
-                ex.printStackTrace();
             }
         }
 
 
         private static void subscribeToTopic(String topic) {
-            try {
-                cloudMqttAndroidClient.subscribe(topic, 0, null, new IMqttActionListener() {
-                    @Override
-                    public void onSuccess(IMqttToken asyncActionToken) {
-                        Log.w("MQTT", "Mqtt on Subscribed On Succes" );
-                    }
 
-                    @Override
-                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        Log.w("Mqtt", "Subscribed fail!");
-                    }
-                });
+            if (cloudMqttAndroidClient != null) {
+                try {
+                    cloudMqttAndroidClient.subscribe(topic, 0, null, new IMqttActionListener() {
+                        @Override
+                        public void onSuccess(IMqttToken asyncActionToken) {
+                            Log.w("MQTT", "Mqtt on Subscribed On Succes");
+                        }
 
-            } catch (MqttException ex) {
-                System.err.println("Exception whilst subscribing");
-                ex.printStackTrace();
+                        @Override
+                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                            Log.w("Mqtt", "Subscribed fail!");
+                        }
+                    });
+
+                } catch (MqttException ex) {
+                    System.err.println("Exception whilst subscribing");
+                    ex.printStackTrace();
+                }
             }
         }
-
 
         public static void publishMessage(
                                           @NonNull String msg, int qos, @NonNull String topic)
                 throws MqttException, UnsupportedEncodingException {
-            byte[] encodedPayload = new byte[0];
-            encodedPayload = msg.getBytes("UTF-8");
-            MqttMessage message = new MqttMessage(encodedPayload);
-            message.setId(5866);
-            message.setRetained(true);
-            message.setQos(qos);
-            cloudMqttAndroidClient.publish(topic, message);
+            if (cloudMqttAndroidClient != null) {
+                byte[] encodedPayload = new byte[0];
+                encodedPayload = msg.getBytes("UTF-8");
+                MqttMessage message = new MqttMessage(encodedPayload);
+                message.setId(5866);
+                message.setRetained(true);
+                message.setQos(qos);
+                cloudMqttAndroidClient.publish(topic, message);
+            }
         }
 
 
-        public MqttAndroidClient getCloudMqttAndroidClient() {
-            return cloudMqttAndroidClient;
-        }
-        private DisconnectedBufferOptions getDisconnectedBufferOptions() {
+
+       public static DisconnectedBufferOptions getDisconnectedBufferOptions() {
             DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
             disconnectedBufferOptions.setBufferEnabled(true);
             disconnectedBufferOptions.setBufferSize(100);
@@ -458,8 +453,19 @@ localMqttStart( nsdService.getHostIp());
 
     }
 
-    public static void reset() {
-if(LocalMqttHelper.localMqttAndroidClient!=null) {
+    public static void reset()  {
+
+        try {
+            MqttHelper.disconnect(LocalMqttHelper.localMqttAndroidClient);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+        try {
+            MqttHelper.disconnect(CloudMqttHelper.cloudMqttAndroidClient);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+        if(LocalMqttHelper.localMqttAndroidClient!=null) {
     LocalMqttHelper.localMqttAndroidClient.close();
 }
         if(CloudMqttHelper.cloudMqttAndroidClient!=null) {
@@ -476,6 +482,20 @@ if(LocalMqttHelper.localMqttAndroidClient!=null) {
 
 
 
+    }
+    public static  void disconnect(@NonNull MqttAndroidClient client)
+            throws MqttException {
+        IMqttToken mqttToken = client.disconnect();
+        mqttToken.setActionCallback(new IMqttActionListener() {
+            @Override
+            public void onSuccess(IMqttToken iMqttToken) {
+                Log.d("DISCONNECT", "Successfully disconnected");
+            }
+            @Override
+            public void onFailure(IMqttToken iMqttToken, Throwable throwable) {
+                Log.d("DISCONNECT", "Failed to disconnected " + throwable.toString());
+            }
+        });
     }
 
 }

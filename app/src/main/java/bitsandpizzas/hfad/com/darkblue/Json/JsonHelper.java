@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeCommandMessege;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeInfoMessege;
+import bitsandpizzas.hfad.com.darkblue.NodeData.NodeStateMessege;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeUtils;
 
 public class JsonHelper {
@@ -43,20 +44,53 @@ return  messegeId;
         int nodeId;
         String nodeState;
 
-
+        int r1,r2,r3,r4;
 
            root=new JSONObject(mJsonString);
 
             nodeId=root.getInt("nodeid");
             nodeState=root.getString("nodestate");
+        r1=root.getInt("relay1");
+        r2=root.getInt("relay2");
+        r3=root.getInt("relay3");
+        r4=root.getInt("relay4");
 
 
-NodeInfoMessege nodeInfoMessege=new NodeInfoMessege(nodeId,nodeState,null);
+NodeInfoMessege nodeInfoMessege=new NodeInfoMessege(nodeId,nodeState,null,r1,r2,r3,r4);
 
 
 return nodeInfoMessege;
 
     }
+
+    public NodeStateMessege getNodeStateMessege() throws JSONException {
+        JSONObject root;
+        String messegeId;
+        int nodeId;
+      int r1,r2,r3,r4;
+
+
+
+        root=new JSONObject(mJsonString);
+
+        nodeId=root.getInt("nodeid");
+       r1=root.getInt("relay1");
+        r2=root.getInt("relay2");
+        r3=root.getInt("relay3");
+        r4=root.getInt("relay4");
+
+
+        NodeStateMessege nodeStateMessege= new NodeStateMessege(nodeId,r1,r2,r3,r4);
+
+
+        return nodeStateMessege;
+
+    }
+
+
+
+
+
 public static String  convertNodeCommandMessegeToJsonString(NodeCommandMessege nodeCommandMessege) throws JSONException {
 
     JSONObject root=new JSONObject();

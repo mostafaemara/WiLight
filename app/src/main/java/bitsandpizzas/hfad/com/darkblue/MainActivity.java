@@ -46,26 +46,30 @@ public class MainActivity extends AppCompatActivity{
 
         Log.e("CLICK",Integer.toString(i));
         Fragment fragment = null;
+        String title=null;
 
         switch (i){
             case(0):
 
 
-
+title="Home";
 
                fragment = new MainFragment();
 
 
 
 
+
                 break;
             case(1):
+                title="WifiConfig";
 
                 fragment=new WifiConfigFragment();
                // Intent z = new Intent(this, WifiConfigActivity.class);
               //  startActivity(z);
                 break;
             case(2):
+                title="Setting";
                 fragment = new SettingFragment();
 
                 default:
@@ -80,9 +84,11 @@ public class MainActivity extends AppCompatActivity{
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container, fragment);
         fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         fragmentTransaction.commit();
 
+
+        getSupportActionBar().setTitle(getResources().getStringArray(R.array.mainlist)[i]);
         mDrawerLayout.closeDrawers();
     }
 

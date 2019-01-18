@@ -76,6 +76,28 @@ public class NodeAdapter extends ArrayAdapter<Node> {
 
         final ViewHolder holder= (ViewHolder) listItem.getTag();
 
+
+
+        final Node currentNode=mNodes.get(position);
+        if(currentNode.getRelay1()==1){
+
+            holder.btn1.setChecked(true);
+        }else{
+            holder.btn1.setChecked(false);
+
+        }
+        if(currentNode.getRelay2()==1){
+
+            holder.btn2.setChecked(true);
+        }
+        if(currentNode.getRelay3()==1){
+
+            holder.btn3.setChecked(true);
+        }
+        if(currentNode.getRelay4()==1){
+
+            holder.btn4.setChecked(true);
+        }
         holder.btn1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -172,7 +194,7 @@ public class NodeAdapter extends ArrayAdapter<Node> {
                         e.printStackTrace();
                     }
                 }
-                }
+            }
 
         });
         holder.btn4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -207,8 +229,6 @@ public class NodeAdapter extends ArrayAdapter<Node> {
             }
         });
 
-
-        final Node currentNode=mNodes.get(position);
         pop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -255,6 +275,7 @@ public class NodeAdapter extends ArrayAdapter<Node> {
             }
 
         });
+
 
         TextView nodename=listItem.findViewById(R.id.nodenametxt);
         nodename.setText(currentNode.getmNodeName());

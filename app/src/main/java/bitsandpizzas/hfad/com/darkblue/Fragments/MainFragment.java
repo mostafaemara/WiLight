@@ -29,6 +29,7 @@ import bitsandpizzas.hfad.com.darkblue.NodeData.Node;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeAdapter;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeHandShakeMessege;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeInfoMessege;
+import bitsandpizzas.hfad.com.darkblue.NodeData.NodeStateMessege;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeUtils;
 import bitsandpizzas.hfad.com.darkblue.R;
 
@@ -61,11 +62,16 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onStart() {
-
-
-
-
         super.onStart();
+        View view=getView();
+        if(view!=null) {
+            SugarContext.init(getActivity());
+            localServerStat = view.findViewById(R.id.localserverstat);
+            cloudServerStat = view.findViewById(R.id.cloudserverstat);
+            listView = view.findViewById(R.id.nodelist);
+
+        }
+
         //SharedPreferences prefs = getActivity().getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
       //  String restoredText = prefs.getString(MY_PREFS_KEY, null);
       //  if (restoredText != null) {
@@ -102,10 +108,7 @@ public class MainFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        SugarContext.init(getActivity());
-        localServerStat = view.findViewById(R.id.localserverstat);
-        cloudServerStat = view.findViewById(R.id.cloudserverstat);
-        listView = view.findViewById(R.id.nodelist);
+
 
 
         // Inflate the layout for this fragment
@@ -336,33 +339,35 @@ MqttHelper.reset();
 
         if (nodeInfoMessege.getmNodeState().equals("connect")) {
             int nodeId = nodeInfoMessege.getmNodeID();
+            int r1=nodeInfoMessege.getRelay1State();
+            int r2=nodeInfoMessege.getRelay2State();
+            int r3=nodeInfoMessege.getRelay3State();
+            int r4=nodeInfoMessege.getRelay4State();
 
-            Node node = new Node(nodeId, "Node ID " + Integer.toString(nodeId));
-            if(nodes.size()==0){
-                nodes.add(node);
+            Node node = new Node(nodeId, "Node ID " + Integer.toString(nodeId),r1,r2,r3,r4);
 
 
-            }
+
+
+
             for (int i = 0; i < nodes.size(); i++) {
 
 
                 if (nodes.get(i).getmNodeId()==nodeId) {
+                    nodes.remove(i);
+
 
 break;
 
 
                 }
 
-                if ((i+1==nodes.size())&&(nodes.get(i).getmNodeId()!=nodeId)){
 
-                    nodes.add(node);
-
-                }
 
 
 
             }
-
+            nodes.add(node);
 
             nodeAdapter = new NodeAdapter(getActivity(), nodes);
             listView.setAdapter(nodeAdapter);
@@ -390,6 +395,7 @@ break;
             listView.setAdapter(nodeAdapter);
 
 
+
         }
 
 
@@ -405,6 +411,7 @@ break;
                 NodeInfoMessege nodeInfoMessege = jsonHelper.getNodeInfoMessege();
                 handleNodeInfoMessege(nodeInfoMessege);
                 break;
+
             default:
                 break;
 

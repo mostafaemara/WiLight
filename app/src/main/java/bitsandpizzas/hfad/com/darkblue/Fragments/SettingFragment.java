@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import bitsandpizzas.hfad.com.darkblue.R;
 
@@ -41,6 +42,9 @@ btn=view.findViewById(R.id.btn_enterid_fragment_setting);
 btn.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View v) {
+        Toast.makeText(getActivity(),"DONE",Toast.LENGTH_LONG).show();
+
+        setHubId(editText.getText().toString());
 
     }
 });
@@ -69,5 +73,11 @@ btn.setOnClickListener(new View.OnClickListener() {
         editor.putString("id",id);
         editor.apply();
 
+    }
+
+    @Override
+    public void onStart() {
+        Toast.makeText(getActivity(),getHubId(),Toast.LENGTH_LONG).show();
+        super.onStart();
     }
 }
