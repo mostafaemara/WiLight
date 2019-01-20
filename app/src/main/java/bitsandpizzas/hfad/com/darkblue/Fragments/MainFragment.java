@@ -1,20 +1,25 @@
 package bitsandpizzas.hfad.com.darkblue.Fragments;
 
 
-import android.content.SharedPreferences;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+
 import com.orm.SugarContext;
-import com.rafakob.nsdhelper.NsdHelper;
-import com.rafakob.nsdhelper.NsdListener;
-import com.rafakob.nsdhelper.NsdService;
+
+import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -23,17 +28,14 @@ import org.json.JSONException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import bitsandpizzas.hfad.com.darkblue.Json.JsonHelper;
-import bitsandpizzas.hfad.com.darkblue.MainActivity;
-import bitsandpizzas.hfad.com.darkblue.Mqtt.MqttHelper;
+import bitsandpizzas.hfad.com.darkblue.Mqtt.CloudMqttConnection;
+import bitsandpizzas.hfad.com.darkblue.Mqtt.LocalMqttConnection;
 import bitsandpizzas.hfad.com.darkblue.NodeData.Node;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeAdapter;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeHandShakeMessege;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeInfoMessege;
-import bitsandpizzas.hfad.com.darkblue.NodeData.NodeStateMessege;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeUtils;
 import bitsandpizzas.hfad.com.darkblue.R;
-
-import static android.content.Context.MODE_PRIVATE;
 
 
 /**
@@ -42,7 +44,8 @@ import static android.content.Context.MODE_PRIVATE;
 public class MainFragment extends Fragment {
 
 
-
+private CloudMqttConnection mCloudMqttConnection;
+private LocalMqttConnection mLocalMqttConnection;
 
 
     ImageView cloudServerStat;
@@ -50,6 +53,9 @@ public class MainFragment extends Fragment {
     ListView listView;
     NodeAdapter nodeAdapter;
     ArrayList<Node> nodes;
+    Button refreshBtn;
+    AnimationDrawable d=null;
+
 
 
     int count;
@@ -58,17 +64,72 @@ public class MainFragment extends Fragment {
     public MainFragment() {
 
         // Required empty public constructor
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        View view=getView();
+        final View view=getView();
         if(view!=null) {
-            SugarContext.init(getActivity());
+            refreshBtn=view.findViewById(R.id.refreshbtn);
+             d=(AnimationDrawable)refreshBtn.getCompoundDrawables()[0];
+
             localServerStat = view.findViewById(R.id.localserverstat);
             cloudServerStat = view.findViewById(R.id.cloudserverstat);
             listView = view.findViewById(R.id.nodelist);
+            refreshBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+              //    refreshBtn.setProgress(0,false);
+d.start();
+                    if(mLocalMqttConnection.getLocalMqttAndroidClient()!=null){
+
+                        if( mLocalMqttConnection.getLocalMqttAndroidClient().isConnected()){
+
+                            localServerStat.setImageResource(R.drawable.connected);
+                            try {
+                                mLocalMqttConnection.publishMessage(new NodeHandShakeMessege().getMessege(),0,NodeUtils.NODE_INF_PUBLISH_TOPIC);
+                            } catch (MqttException e) {
+                                e.printStackTrace();
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }else{
+                            localMqttStart();
+                            localServerStat.setImageResource(R.drawable.disconnected);
+
+                        }
+                    }
+                    if(mCloudMqttConnection.getCloudMqttAndroidClient()!=null){
+
+
+
+
+                        if( mCloudMqttConnection.getCloudMqttAndroidClient().isConnected()){
+
+                            cloudServerStat.setImageResource(R.drawable.connected);
+                            try {
+                                mCloudMqttConnection.publishMessage(new NodeHandShakeMessege().getMessege(),0,NodeUtils.NODE_INF_PUBLISH_TOPIC);
+                            } catch (MqttException e) {
+                                e.printStackTrace();
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+
+                        }else{
+
+                            cloudMqttStart();
+                            cloudServerStat.setImageResource(R.drawable.disconnected);
+
+                        }
+
+                    }
+
+                }
+            });
 
         }
 
@@ -77,14 +138,16 @@ public class MainFragment extends Fragment {
       //  if (restoredText != null) {
        //  Log.e("serverIPRestored",restoredText);
            // String host = "tcp://" + restoredText + ":1883";
-        MqttHelper mqttHelper = new MqttHelper(getActivity());
+
 
         // Log.e("DataBase",serverIp.ip);
 
 
-        checkServerStateTimer();
+
         nodes = new ArrayList<Node>();
-          //localMqttStart();
+          localMqttStart();
+          cloudMqttStart();
+        checkServerStateTimer();
 
        // }else{
 
@@ -114,12 +177,7 @@ public class MainFragment extends Fragment {
         // Inflate the layout for this fragment
         return view;
     }
-private void startSearchForLocalServer(){
 
-
-
-
-}
     private void checkServerStateTimer() {
 
 
@@ -129,53 +187,9 @@ private void startSearchForLocalServer(){
             public void run() {
                 Log.e("TIMER", "Timer Running");
 
+ handleClientsState();
+ handler.postDelayed(this,1000 );
 
-
-
-
-
-
-
-                if(MqttHelper.LocalMqttHelper.localMqttAndroidClient!=null){
-
-                 if( MqttHelper.LocalMqttHelper.localMqttAndroidClient.isConnected()){
-
-                     localServerStat.setImageResource(R.drawable.connected);
-
-
-                 }else{
-                     localMqttStart();
-                     localServerStat.setImageResource(R.drawable.disconnected);
-
-                 }
-                }else{
-
-
-                    handler.post(this );
-
-
-                }
-                if(MqttHelper.CloudMqttHelper.cloudMqttAndroidClient!=null){
-
-
-
-
-                    if( MqttHelper.CloudMqttHelper.cloudMqttAndroidClient.isConnected()){
-
-                        cloudServerStat.setImageResource(R.drawable.connected);
-
-
-                    }else{
-
-                        cloudMqttStart();
-                        cloudServerStat.setImageResource(R.drawable.disconnected);
-
-                    }
-
-                }else{
-
-                    handler.post(this );
-                }
 
             //    cloudMqttCheck();
 
@@ -213,7 +227,7 @@ private void startSearchForLocalServer(){
 
         super.onDestroy();
 
-MqttHelper.reset();
+
         Log.e("ONDESTROY","Destroyed");
 
 
@@ -224,14 +238,14 @@ MqttHelper.reset();
 
 
 
-        MqttHelper.LocalMqttHelper.setCallback(new MqttCallbackExtended() {
+        mLocalMqttConnection.setCallback(new MqttCallbackExtended() {
 
             @Override
             public void connectComplete(boolean b, String s) {
               localServerStat.setImageResource(R.drawable.connected);
                 NodeHandShakeMessege nodeHandShakeMessege=new NodeHandShakeMessege();
                 try {
-                    MqttHelper.LocalMqttHelper.publishMessage(nodeHandShakeMessege.getMessege(),0,NodeUtils.NODE_INF_PUBLISH_TOPIC);
+                    mLocalMqttConnection.publishMessage(nodeHandShakeMessege.getMessege(),0,NodeUtils.NODE_INF_PUBLISH_TOPIC);
                 } catch (MqttException e) {
                     e.printStackTrace();
                 } catch (UnsupportedEncodingException e) {
@@ -268,7 +282,7 @@ MqttHelper.reset();
 
     private void cloudMqttStart() {
 
-        MqttHelper.CloudMqttHelper.setCallback(new MqttCallbackExtended() {
+        mCloudMqttConnection.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean b, String s) {
                 cloudServerStat.setImageResource(R.drawable.connected);
@@ -276,7 +290,7 @@ MqttHelper.reset();
 
                 NodeHandShakeMessege nodeHandShakeMessege=new NodeHandShakeMessege();
                 try {
-                    MqttHelper.CloudMqttHelper.publishMessage(nodeHandShakeMessege.getMessege(),0,NodeUtils.NODE_INF_PUBLISH_TOPIC);
+                   mCloudMqttConnection.publishMessage(nodeHandShakeMessege.getMessege(),0,NodeUtils.NODE_INF_PUBLISH_TOPIC);
                 } catch (MqttException e) {
                     e.printStackTrace();
                 } catch (UnsupportedEncodingException e) {
@@ -337,6 +351,7 @@ MqttHelper.reset();
 
     void handleNodeInfoMessege(NodeInfoMessege nodeInfoMessege) {
 
+
         if (nodeInfoMessege.getmNodeState().equals("connect")) {
             int nodeId = nodeInfoMessege.getmNodeID();
             int r1=nodeInfoMessege.getRelay1State();
@@ -369,7 +384,7 @@ break;
             }
             nodes.add(node);
 
-            nodeAdapter = new NodeAdapter(getActivity(), nodes);
+            nodeAdapter = new NodeAdapter(getActivity(), nodes,mLocalMqttConnection,mCloudMqttConnection);
             listView.setAdapter(nodeAdapter);
         }
         if (nodeInfoMessege.getmNodeState().equals("disconnect")) {
@@ -391,7 +406,7 @@ break;
             Log.e("Node Remove", Integer.toString(nodes.indexOf(node)));
             nodes.remove(node);
 
-            nodeAdapter = new NodeAdapter(getActivity(), nodes);
+            nodeAdapter = new NodeAdapter(getActivity(), nodes,mLocalMqttConnection,mCloudMqttConnection);
             listView.setAdapter(nodeAdapter);
 
 
@@ -402,7 +417,7 @@ break;
     }
 
     void handleMqttMessege(MqttMessage mqttMessage) throws JSONException {
-
+d.stop();
         JsonHelper jsonHelper = new JsonHelper(mqttMessage.toString());
         int messegeId = jsonHelper.getMessegeID();
 
@@ -415,6 +430,43 @@ break;
             default:
                 break;
 
+        }
+    }
+
+    public void setCloudMqttConnection(CloudMqttConnection mCloudMqttConnection) {
+        this.mCloudMqttConnection = mCloudMqttConnection;
+    }
+
+    public void setLocalMqttConnection(LocalMqttConnection mLocalMqttConnection) {
+        this.mLocalMqttConnection = mLocalMqttConnection;
+    }
+
+    void handleClientsState() {
+
+        MqttAndroidClient localMqttAndroidClient = mLocalMqttConnection.getLocalMqttAndroidClient();
+        MqttAndroidClient cloudMqttAndroidClient = mCloudMqttConnection.getCloudMqttAndroidClient();
+        if (localMqttAndroidClient != null) {
+            if (localMqttAndroidClient.isConnected()) {
+
+                localServerStat.setImageResource(R.drawable.connected);
+                Log.e("LocalServer", "CONNECTED");
+
+            } else {
+                Log.e("LocalServer", "DISCONNECTED");
+                localServerStat.setImageResource(R.drawable.disconnected);
+            }
+        }
+        if (cloudMqttAndroidClient != null) {
+
+            if (cloudMqttAndroidClient.isConnected()) {
+
+                cloudServerStat.setImageResource(R.drawable.connected);
+            } else {
+
+
+                cloudServerStat.setImageResource(R.drawable.disconnected);
+
+            }
         }
     }
 }

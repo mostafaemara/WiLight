@@ -28,7 +28,7 @@ public class JsonHelper {
 
         JSONObject root;
         root=new JSONObject(mJsonString);
-        messegeId=root.getInt("messegeid");
+        messegeId=root.getInt(NodeUtils.MESSEGE_ID_KEY);
 
 
 return  messegeId;
@@ -48,12 +48,12 @@ return  messegeId;
 
            root=new JSONObject(mJsonString);
 
-            nodeId=root.getInt("nodeid");
-            nodeState=root.getString("nodestate");
-        r1=root.getInt("relay1");
-        r2=root.getInt("relay2");
-        r3=root.getInt("relay3");
-        r4=root.getInt("relay4");
+            nodeId=root.getInt(NodeUtils.NODE_ID_KEY);
+            nodeState=root.getString(NodeUtils.NODE_STATE_KEY);
+        r1=root.getInt(NodeUtils.NODE_RELAY_1_STATE_KEY);
+        r2=root.getInt(NodeUtils.NODE_RELAY_2_STATE_KEY);
+        r3=root.getInt(NodeUtils.NODE_RELAY_3_STATE_KEY);
+        r4=root.getInt(NodeUtils.NODE_RELAY_4_STATE_KEY);
 
 
 NodeInfoMessege nodeInfoMessege=new NodeInfoMessege(nodeId,nodeState,null,r1,r2,r3,r4);
@@ -63,29 +63,7 @@ return nodeInfoMessege;
 
     }
 
-    public NodeStateMessege getNodeStateMessege() throws JSONException {
-        JSONObject root;
-        String messegeId;
-        int nodeId;
-      int r1,r2,r3,r4;
 
-
-
-        root=new JSONObject(mJsonString);
-
-        nodeId=root.getInt("nodeid");
-       r1=root.getInt("relay1");
-        r2=root.getInt("relay2");
-        r3=root.getInt("relay3");
-        r4=root.getInt("relay4");
-
-
-        NodeStateMessege nodeStateMessege= new NodeStateMessege(nodeId,r1,r2,r3,r4);
-
-
-        return nodeStateMessege;
-
-    }
 
 
 

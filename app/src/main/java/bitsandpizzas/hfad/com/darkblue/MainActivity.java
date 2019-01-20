@@ -19,10 +19,14 @@ import android.support.v7.widget.Toolbar;
 import bitsandpizzas.hfad.com.darkblue.Fragments.MainFragment;
 import bitsandpizzas.hfad.com.darkblue.Fragments.SettingFragment;
 import bitsandpizzas.hfad.com.darkblue.Fragments.WifiConfigFragment;
+import bitsandpizzas.hfad.com.darkblue.Mqtt.CloudMqttConnection;
+import bitsandpizzas.hfad.com.darkblue.Mqtt.LocalMqttConnection;
 
 public class MainActivity extends AppCompatActivity{
 
     private ListView mainList;
+    private LocalMqttConnection mLocalMqttConnection;
+    private CloudMqttConnection mCloudMqttConnection;
     private Toolbar toolbar;
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -56,8 +60,8 @@ title="Home";
 
                fragment = new MainFragment();
 
-
-
+((MainFragment) fragment).setCloudMqttConnection(mCloudMqttConnection);
+((MainFragment) fragment).setLocalMqttConnection(mLocalMqttConnection);
 
 
                 break;
@@ -98,7 +102,8 @@ title="Home";
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+mLocalMqttConnection=new LocalMqttConnection(this);
+mCloudMqttConnection=new CloudMqttConnection(this);
         mDrawerLayout=(DrawerLayout)findViewById(R.id.mDrawerLayout);
         toolbar=(Toolbar)findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);

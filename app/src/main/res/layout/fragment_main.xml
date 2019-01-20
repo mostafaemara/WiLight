@@ -14,61 +14,89 @@
 
 
     <!-- TODO: Update blank fragment layout -->
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-
-        android:text="Local:"
-        android:textColor="#000000"
-        android:textStyle="bold" />
-
-    <ImageView
-        android:id="@+id/localserverstat"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_margin="5dp"
-        android:src="@drawable/disconnected"
-        android:text="OFFLINE"
-        android:textColor="#a32806" />
-
-
-
-</LinearLayout>
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
+
+        <LinearLayout
+            android:id="@+id/statelayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:orientation="vertical">
 
-            android:text="Cloud:"
-            android:textColor="#000000"
-            android:textStyle="bold" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/cloudserverstat"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_margin="5dp"
-            android:src="@drawable/disconnected"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
 
-            android:textColor="#a32806" />
+                    android:text="Local:"
+                    android:textColor="#000000"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/localserverstat"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_margin="5dp"
+                    android:src="@drawable/disconnected"
+                    android:text="OFFLINE"
+                    android:textColor="#a32806" />
 
 
-    </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+
+                    android:text="Cloud:"
+                    android:textColor="#000000"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/cloudserverstat"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_margin="5dp"
+                    android:src="@drawable/disconnected"
+
+                    android:textColor="#a32806" />
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/refreshbtn"
+            android:layout_width="46dp"
+
+            android:layout_height="wrap_content"
+
+            android:layout_alignParentRight="true"
+
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/progress" />
+    </RelativeLayout>
+
     <ListView
         android:id="@+id/nodelist"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></ListView>
+        android:layout_height="wrap_content" />
 
 
 </LinearLayout>

@@ -27,20 +27,25 @@ import java.util.List;
 
 import bitsandpizzas.hfad.com.darkblue.DataBase.DataBaseHelper;
 import bitsandpizzas.hfad.com.darkblue.Json.JsonHelper;
-import bitsandpizzas.hfad.com.darkblue.Mqtt.MqttHelper;
+import bitsandpizzas.hfad.com.darkblue.Mqtt.CloudMqttConnection;
+import bitsandpizzas.hfad.com.darkblue.Mqtt.LocalMqttConnection;
 import bitsandpizzas.hfad.com.darkblue.R;
 
 
 public class NodeAdapter extends ArrayAdapter<Node> {
 
     private Context mContext;
+    private CloudMqttConnection mCloudMqttConnection;
+    private LocalMqttConnection mLocalMqttConnection;
 
     private ArrayList<Node> mNodes;
     DataBaseHelper dataBaseHelper;
-    public NodeAdapter(@NonNull Context context, @NonNull ArrayList<Node> nodes) {
+    public NodeAdapter(@NonNull Context context, @NonNull ArrayList<Node> nodes,LocalMqttConnection localMqttConnection,CloudMqttConnection cloudMqttConnection) {
         super(context,0, nodes);
         mContext=context;
         mNodes=nodes;
+        mCloudMqttConnection=cloudMqttConnection;
+        mLocalMqttConnection=localMqttConnection;
 
         dataBaseHelper=new DataBaseHelper(context);
 
@@ -307,11 +312,11 @@ public class NodeAdapter extends ArrayAdapter<Node> {
             NodeCommandMessege nodeCommandMessege =new NodeCommandMessege(node.getmNodeId(), NodeUtils.NODE_COMMAND_ON_VALUE,btnNumber);
 
             String jsonString=JsonHelper.convertNodeCommandMessegeToJsonString(nodeCommandMessege);
-        if(MqttHelper.CloudMqttHelper.cloudMqttAndroidClient!=null) {
-            MqttHelper.CloudMqttHelper.publishMessage(jsonString, 0, NodeUtils.NODE_COMMAND_TOPIC);
+        if(mCloudMqttConnection.getCloudMqttAndroidClient()!=null) {
+            mCloudMqttConnection.publishMessage(jsonString, 0, NodeUtils.NODE_COMMAND_TOPIC);
         }
-        if(MqttHelper.LocalMqttHelper.localMqttAndroidClient!=null) {
-            MqttHelper.LocalMqttHelper.publishMessage(jsonString, 0, NodeUtils.NODE_COMMAND_TOPIC);
+        if(mLocalMqttConnection.getLocalMqttAndroidClient()!=null) {
+            mLocalMqttConnection.publishMessage(jsonString, 0, NodeUtils.NODE_COMMAND_TOPIC);
         }
 
 
@@ -334,11 +339,11 @@ public class NodeAdapter extends ArrayAdapter<Node> {
             NodeCommandMessege nodeCommandMessege =new NodeCommandMessege(node.getmNodeId(), NodeUtils.NODE_COMMAND_OFF_VALUE,btnNumber);
 
             String jsonString=JsonHelper.convertNodeCommandMessegeToJsonString(nodeCommandMessege);
-            if(MqttHelper.CloudMqttHelper.cloudMqttAndroidClient!=null) {
-                MqttHelper.CloudMqttHelper.publishMessage(jsonString, 0, NodeUtils.NODE_COMMAND_TOPIC);
+            if(mCloudMqttConnection.getCloudMqttAndroidClient()!=null) {
+               mCloudMqttConnection.publishMessage(jsonString, 0, NodeUtils.NODE_COMMAND_TOPIC);
             }
-            if(MqttHelper.LocalMqttHelper.localMqttAndroidClient!=null) {
-                MqttHelper.LocalMqttHelper.publishMessage(jsonString, 0, NodeUtils.NODE_COMMAND_TOPIC);
+            if(mLocalMqttConnection.getLocalMqttAndroidClient()!=null) {
+              mLocalMqttConnection.publishMessage(jsonString, 0, NodeUtils.NODE_COMMAND_TOPIC);
             }
 
 
