@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,14 +30,18 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
+
 import bitsandpizzas.hfad.com.darkblue.Json.JsonHelper;
 import bitsandpizzas.hfad.com.darkblue.Mqtt.CloudMqttConnection;
 import bitsandpizzas.hfad.com.darkblue.Mqtt.LocalMqttConnection;
+import bitsandpizzas.hfad.com.darkblue.NodeData.EnhancedNodeAdapter;
 import bitsandpizzas.hfad.com.darkblue.NodeData.Node;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeAdapter;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeHandShakeMessege;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeInfoMessege;
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeUtils;
+import bitsandpizzas.hfad.com.darkblue.NodeData.UserData;
 import bitsandpizzas.hfad.com.darkblue.R;
 
 
@@ -50,9 +57,12 @@ private LocalMqttConnection mLocalMqttConnection;
 
     ImageView cloudServerStat;
     ImageView localServerStat;
-    ListView listView;
-    NodeAdapter nodeAdapter;
-    ArrayList<Node> nodes;
+  //  ListView listView;
+     RecyclerView  listView;
+    EnhancedNodeAdapter nodeAdapter;
+    //NodeAdapter nodeAdapter;
+    //ArrayList<Node> nodes;
+    List<Node> nodes=new ArrayList<>();
     Button refreshBtn;
     AnimationDrawable d=null;
 
@@ -78,9 +88,17 @@ private LocalMqttConnection mLocalMqttConnection;
             localServerStat = view.findViewById(R.id.localserverstat);
             cloudServerStat = view.findViewById(R.id.cloudserverstat);
             listView = view.findViewById(R.id.nodelist);
+            nodeAdapter = new EnhancedNodeAdapter(getActivity(), nodes,mLocalMqttConnection,mCloudMqttConnection);
+
+
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+            listView.setLayoutManager(mLayoutManager);
+            listView.setItemAnimator(new DefaultItemAnimator());
+            listView.setAdapter(nodeAdapter);
             refreshBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    nodes.clear();
               //    refreshBtn.setProgress(0,false);
 d.start();
                     if(mLocalMqttConnection.getLocalMqttAndroidClient()!=null){
@@ -144,7 +162,7 @@ d.start();
 
 
 
-        nodes = new ArrayList<Node>();
+
           localMqttStart();
           cloudMqttStart();
         checkServerStateTimer();
@@ -171,8 +189,7 @@ d.start();
 
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-
-
+UserData.getSaved(getActivity());
 
         // Inflate the layout for this fragment
         return view;
@@ -185,7 +202,12 @@ d.start();
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                Log.e("TIMER", "Timer Running");
+                Log.e("USerData", "username : " +UserData.getUsername());
+                Log.e("USerData", "Password : " +UserData.getPassword());
+                Log.e("USerData", "HuBID : " +Long.valueOf(UserData.getHubId()));
+                Log.e("USerData", "Host : " +UserData.getHost());
+                Log.e("USerData", "Port : " +UserData.getPort());
+
 
  handleClientsState();
  handler.postDelayed(this,1000 );
@@ -347,7 +369,29 @@ d.start();
 
 
 
+boolean contain(Node mNode){
 
+
+
+    for (int i = 0; i < nodes.size(); i++) {
+
+
+        if (nodes.get(i).getmNodeId()==mNode.getmNodeId()) {
+
+
+
+        return true;
+
+
+        }
+
+
+
+
+
+    }
+    return false;
+}
 
     void handleNodeInfoMessege(NodeInfoMessege nodeInfoMessege) {
 
@@ -365,27 +409,15 @@ d.start();
 
 
 
-            for (int i = 0; i < nodes.size(); i++) {
 
+if(!contain(node)) {
+    nodes.add(node);
+}
 
-                if (nodes.get(i).getmNodeId()==nodeId) {
-                    nodes.remove(i);
-
-
-break;
-
-
-                }
+            nodeAdapter.notifyDataSetChanged();
 
 
 
-
-
-            }
-            nodes.add(node);
-
-            nodeAdapter = new NodeAdapter(getActivity(), nodes,mLocalMqttConnection,mCloudMqttConnection);
-            listView.setAdapter(nodeAdapter);
         }
         if (nodeInfoMessege.getmNodeState().equals("disconnect")) {
 
@@ -406,8 +438,7 @@ break;
             Log.e("Node Remove", Integer.toString(nodes.indexOf(node)));
             nodes.remove(node);
 
-            nodeAdapter = new NodeAdapter(getActivity(), nodes,mLocalMqttConnection,mCloudMqttConnection);
-            listView.setAdapter(nodeAdapter);
+nodeAdapter.notifyDataSetChanged();
 
 
 

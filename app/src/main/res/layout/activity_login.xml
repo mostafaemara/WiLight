@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity"
+    android:background="@drawable/background1">
+    <EditText
+        android:textColor="@color/textcolor"
+        android:layout_margin="40dp"
+        android:id="@+id/editetext_signinemail"
+
+        android:gravity="center"
+        android:hint="Email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:textColor="@color/textcolor"
+        android:layout_margin="40dp"
+        android:inputType="textPassword"
+        android:layout_below="@+id/editetext_signinemail"
+        android:id="@+id/editetext_signinpassword"
+
+        android:gravity="center"
+        android:hint="password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/btn_signin"
+        android:layout_margin="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editetext_signinpassword"
+        android:layout_centerHorizontal="true"
+        android:text="Login"
+        android:background="@color/background"
+        android:textColor="@color/textcolor"/>
+
+</RelativeLayout>

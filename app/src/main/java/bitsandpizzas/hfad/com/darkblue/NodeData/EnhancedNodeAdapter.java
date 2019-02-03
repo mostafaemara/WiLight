@@ -1,20 +1,12 @@
 package bitsandpizzas.hfad.com.darkblue.NodeData;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Log;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -31,64 +23,56 @@ import bitsandpizzas.hfad.com.darkblue.Mqtt.CloudMqttConnection;
 import bitsandpizzas.hfad.com.darkblue.Mqtt.LocalMqttConnection;
 import bitsandpizzas.hfad.com.darkblue.R;
 
-
-public class NodeAdapter extends ArrayAdapter<Node> {
-
-    private Context mContext;
-    private CloudMqttConnection mCloudMqttConnection;
-    private LocalMqttConnection mLocalMqttConnection;
-
-    private ArrayList<Node> mNodes;
+public class EnhancedNodeAdapter extends RecyclerView.Adapter<EnhancedNodeAdapter.NodeViewHolder> {
     DataBaseHelper dataBaseHelper;
-    public NodeAdapter(@NonNull Context context, @NonNull ArrayList<Node> nodes,LocalMqttConnection localMqttConnection,CloudMqttConnection cloudMqttConnection) {
-        super(context,0, nodes);
-        mContext=context;
-        mNodes=nodes;
-        mCloudMqttConnection=cloudMqttConnection;
-        mLocalMqttConnection=localMqttConnection;
 
-        dataBaseHelper=new DataBaseHelper(context);
+    private List<Node> mNodes;
+    private LocalMqttConnection mLocalMqttConnection;
+    private CloudMqttConnection mCloudMqttConnection;
+    private Context mContext;
 
+    public EnhancedNodeAdapter(@NonNull Context context, @NonNull List<Node> nodes, LocalMqttConnection localMqttConnection, CloudMqttConnection cloudMqttConnection) {
+
+   mNodes=nodes;
+mCloudMqttConnection=cloudMqttConnection;
+mLocalMqttConnection=localMqttConnection;
+mContext=context;
+        dataBaseHelper=new DataBaseHelper(mContext);
     }
 
-    static class ViewHolder {
+    public class NodeViewHolder extends RecyclerView.ViewHolder {
+        public TextView nodeTitle;
+        public ToggleButton btn1,btn2,btn3,btn4;
 
-        ToggleButton btn1;
-        ToggleButton btn2;
-        ToggleButton btn3;
-        ToggleButton btn4;
+        public NodeViewHolder(View view) {
+            super(view);
+            nodeTitle = (TextView) view.findViewById(R.id.nodenametxt);
+            btn1=(ToggleButton)view.findViewById(R.id.btn1);
+            btn2=(ToggleButton)view.findViewById(R.id.btn2);
+            btn3=(ToggleButton)view.findViewById(R.id.btn3);
+            btn4=(ToggleButton)view.findViewById(R.id.btn4);
+
+        }
     }
 
     @NonNull
     @Override
-    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View listItem=convertView;
-        if(listItem==null){
+    public NodeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.nodes_list_item,parent,false);
+        NodeViewHolder nodeViewHolder=new NodeViewHolder(view);
+        return nodeViewHolder ;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull NodeViewHolder holder, final int position) {
 
 
-            listItem=LayoutInflater.from(mContext).inflate(R.layout.nodes_list_item,parent,false);
-            ViewHolder holder=new ViewHolder();
-            holder.btn1=listItem.findViewById(R.id.btn1);
-            holder.btn2=listItem.findViewById(R.id.btn2);
-            holder.btn3=listItem.findViewById(R.id.btn3);
-            holder.btn4=listItem.findViewById(R.id.btn4);
-
-            listItem.setTag(holder);
-
-        }
-
-        final ImageView pop=listItem.findViewById(R.id.pop);
-
-        final ViewHolder holder= (ViewHolder) listItem.getTag();
-
-
-
-        final Node currentNode=mNodes.get(position);
-        holder.btn1.setOnCheckedChangeListener(null);
-        holder.btn2.setOnCheckedChangeListener(null);
-        holder.btn3.setOnCheckedChangeListener(null);
-        holder.btn4.setOnCheckedChangeListener(null);
-        if(currentNode.getRelay1()==1){
+        final Node node=mNodes.get(position);
+       holder.btn1.setOnCheckedChangeListener(null);
+      holder.btn2.setOnCheckedChangeListener(null);
+     holder.btn3.setOnCheckedChangeListener(null);
+      holder.btn4.setOnCheckedChangeListener(null);
+        if(node.getRelay1()==1){
 
             holder.btn1.setChecked(true);
 
@@ -96,18 +80,21 @@ public class NodeAdapter extends ArrayAdapter<Node> {
             holder.btn1.setChecked(false);
 
         }
-        if(currentNode.getRelay2()==1){
+        if(node.getRelay2()==1){
 
             holder.btn2.setChecked(true);
         }
-        if(currentNode.getRelay3()==1){
+        if(node.getRelay3()==1){
 
             holder.btn3.setChecked(true);
         }
-        if(currentNode.getRelay4()==1){
+        if(node.getRelay4()==1){
 
             holder.btn4.setChecked(true);
         }
+
+        holder.nodeTitle.setText(node.getmNodeName());
+
         holder.btn1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -174,7 +161,7 @@ public class NodeAdapter extends ArrayAdapter<Node> {
                     }
                 }
             }
-        });  holder.btn3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        });   holder.btn3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
@@ -239,63 +226,13 @@ public class NodeAdapter extends ArrayAdapter<Node> {
             }
         });
 
-        pop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                PopupMenu popup = new PopupMenu(getContext(), v);
-                popup.getMenuInflater().inflate(R.menu.popupmenu,
-                        popup.getMenu());
-                popup.show();    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-
-                        switch (item.getItemId()) {
-                            case R.id.editenodename:
-                                final Dialog mDialog=new Dialog(getContext());
-                                mDialog.setContentView(R.layout.dialog);
-                                final EditText editText=mDialog.findViewById(R.id.newnodedname);
-                                Button btn=mDialog.findViewById(R.id.dilogbtn);
-                                editText.setEnabled(true);
-                                btn.setEnabled(true);
-                                mDialog.show();
-                                btn.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        dataBaseHelper.delete(currentNode);
-                                        dataBaseHelper.add(dataBaseHelper,new Node(currentNode.getmNodeId(),editText.getText().toString()));
-                                        Log.e("Dialog",editText.getText().toString());
-                                        mDialog.cancel();
-                                    }
-                                });
-
-
-                                break;
-
-
-                            default:
-                                break;
-                        }
-
-                        return true;
-                    }
-                });
-
-
-            }
-
-        });
-
-
-        TextView nodename=listItem.findViewById(R.id.nodenametxt);
-        nodename.setText(currentNode.getmNodeName());
         List<Node> databaseNodes=dataBaseHelper.getAllNodes();
         for(int i=0;i<databaseNodes.size();i++){
             Node databaseNode=databaseNodes.get(i);
 
-            if(databaseNode.getmNodeId()==currentNode.getmNodeId()){
+            if(databaseNode.getmNodeId()==node.getmNodeId()){
 
-                nodename.setText(databaseNode.getmNodeName());
+                holder.nodeTitle.setText(databaseNode.getmNodeName());
                 break;
 
             }
@@ -305,18 +242,21 @@ public class NodeAdapter extends ArrayAdapter<Node> {
 
 
 
+    }
 
-        return listItem;
+    @Override
+    public int getItemCount() {
+        return mNodes.size();
     }
     void hanleOnState(int position,int btnNumber) throws JSONException, MqttException, UnsupportedEncodingException {
 
 
 
 
-            Node node=mNodes.get(position);
-            NodeCommandMessege nodeCommandMessege =new NodeCommandMessege(node.getmNodeId(), NodeUtils.NODE_COMMAND_ON_VALUE,btnNumber);
+        Node node=mNodes.get(position);
+        NodeCommandMessege nodeCommandMessege =new NodeCommandMessege(node.getmNodeId(), NodeUtils.NODE_COMMAND_ON_VALUE,btnNumber);
 
-            String jsonString=JsonHelper.convertNodeCommandMessegeToJsonString(nodeCommandMessege);
+        String jsonString= JsonHelper.convertNodeCommandMessegeToJsonString(nodeCommandMessege);
         if(mCloudMqttConnection.getCloudMqttAndroidClient()!=null) {
             mCloudMqttConnection.publishMessage(jsonString, 0, NodeUtils.NODE_COMMAND_TOPIC);
         }
@@ -340,16 +280,16 @@ public class NodeAdapter extends ArrayAdapter<Node> {
 
 
 
-            Node node=mNodes.get(position);
-            NodeCommandMessege nodeCommandMessege =new NodeCommandMessege(node.getmNodeId(), NodeUtils.NODE_COMMAND_OFF_VALUE,btnNumber);
+        Node node=mNodes.get(position);
+        NodeCommandMessege nodeCommandMessege =new NodeCommandMessege(node.getmNodeId(), NodeUtils.NODE_COMMAND_OFF_VALUE,btnNumber);
 
-            String jsonString=JsonHelper.convertNodeCommandMessegeToJsonString(nodeCommandMessege);
-            if(mCloudMqttConnection.getCloudMqttAndroidClient()!=null) {
-               mCloudMqttConnection.publishMessage(jsonString, 0, NodeUtils.NODE_COMMAND_TOPIC);
-            }
-            if(mLocalMqttConnection.getLocalMqttAndroidClient()!=null) {
-              mLocalMqttConnection.publishMessage(jsonString, 0, NodeUtils.NODE_COMMAND_TOPIC);
-            }
+        String jsonString=JsonHelper.convertNodeCommandMessegeToJsonString(nodeCommandMessege);
+        if(mCloudMqttConnection.getCloudMqttAndroidClient()!=null) {
+            mCloudMqttConnection.publishMessage(jsonString, 0, NodeUtils.NODE_COMMAND_TOPIC);
+        }
+        if(mLocalMqttConnection.getLocalMqttAndroidClient()!=null) {
+            mLocalMqttConnection.publishMessage(jsonString, 0, NodeUtils.NODE_COMMAND_TOPIC);
+        }
 
 
 
@@ -360,4 +300,6 @@ public class NodeAdapter extends ArrayAdapter<Node> {
 
 
     }
+
+
 }

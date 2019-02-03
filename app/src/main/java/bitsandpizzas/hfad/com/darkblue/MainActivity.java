@@ -102,6 +102,7 @@ title="Home";
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 mLocalMqttConnection=new LocalMqttConnection(this);
 mCloudMqttConnection=new CloudMqttConnection(this);
         mDrawerLayout=(DrawerLayout)findViewById(R.id.mDrawerLayout);
@@ -150,4 +151,5 @@ mCloudMqttConnection=new CloudMqttConnection(this);
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

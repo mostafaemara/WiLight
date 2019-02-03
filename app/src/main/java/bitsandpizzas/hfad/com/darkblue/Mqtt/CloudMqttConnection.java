@@ -18,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import bitsandpizzas.hfad.com.darkblue.NodeData.NodeUtils;
+import bitsandpizzas.hfad.com.darkblue.NodeData.UserData;
 
 public class CloudMqttConnection {
 
@@ -25,13 +26,11 @@ public class CloudMqttConnection {
 
 
 
-    static String cloudServerUri = "tcp://m20.cloudmqtt.com:15228";
+    static String cloudServerUri = "tcp://"+UserData.getHost() +":"+UserData.getPort();
 
     final String CLOUD_CLIENT_ID = UUID.randomUUID().toString();
-    final String subscriptionTopic = "BASE";
-
-    final static String username = "lrcpeafb";
-    final static String password = "wOGwP2ntRAso";
+    final static String username = UserData.getUsername();
+    final static String password = UserData.getPassword();
     public CloudMqttConnection(Context context){
         mCloudMqttAndroidClient = new MqttAndroidClient(context,cloudServerUri, CLOUD_CLIENT_ID);
 

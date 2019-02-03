@@ -38,14 +38,14 @@
             android:orientation="vertical">
 
 
+
             <ListView
                 android:id="@+id/mainlist"
                 android:layout_width="240dp"
 
                 android:layout_height="match_parent"
-                android:background="#99000000">
-
-            </ListView>
+                android:scrollbars="vertical"
+                android:background="#99000000"/>
         </LinearLayout>
 
     </android.support.v4.widget.DrawerLayout>

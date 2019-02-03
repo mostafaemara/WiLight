@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "294418288997",
+    "firebase_url": "https://wilights-45bc8.firebaseio.com",
+    "project_id": "wilights-45bc8",
+    "storage_bucket": "wilights-45bc8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:294418288997:android:fc2127e040b5517b",
+        "android_client_info": {
+          "package_name": "bitsandpizzas.hfad.com.darkblue"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "294418288997-lpr633j87i406ft23ksd1gdhouq66469.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "bitsandpizzas.hfad.com.darkblue",
+            "certificate_hash": "f7465e3ecffacf77fd322cbf014a2fcf833fcb88"
+          }
+        },
+        {
+          "client_id": "294418288997-d5guhqu1nh2abc45a063lijvgfgubvt4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQ9V2G7nrXzzwjzsrFQ2VEMNbnVs5Mcs4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "294418288997-d5guhqu1nh2abc45a063lijvgfgubvt4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

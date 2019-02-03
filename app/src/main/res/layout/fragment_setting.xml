@@ -6,27 +6,64 @@
     android:orientation="vertical"
     tools:context=".Fragments.SettingFragment"
     android:background="@drawable/background2"
-    android:gravity="center">
-
+    >
+    <android.support.v4.widget.Space
+        android:layout_width="match_parent"
+        android:layout_height="100dp" />
     <!-- TODO: Update blank fragment layout -->
 
     <EditText
-    android:inputType="numberPassword"
+        android:gravity="center"
+
         android:textColor="@color/textcolor"
         android:textColorHint="@color/textcolor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter Your Hub ID"
-        android:id="@+id/txthubid"/>
-    <android.support.v4.widget.Space
-        android:layout_width="wrap_content"
-        android:layout_height="100dp" />
-    <Button
+        android:hint="Enter email"
+        android:id="@+id/editetext_signupemail"/>
+    <EditText
+        android:gravity="center"
         android:textColor="@color/textcolor"
-        android:text="Submit"
+        android:textColorHint="@color/textcolor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/btn_enterid_fragment_setting"
+        android:hint="Enter password"
+        android:id="@+id/editetext_signuppassword"/>
+
+    <Button
+        android:textColor="@color/textcolor"
+        android:text="Sign Up"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_signup"
+        android:background="@color/background"/>
+    <android.support.v4.widget.Space
+        android:layout_width="match_parent"
+        android:layout_height="100dp" />
+    <EditText
+        android:gravity="center"
+
+        android:textColor="@color/textcolor"
+        android:textColorHint="@color/textcolor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter email"
+        android:id="@+id/editetext_signinemail"/>
+    <EditText
+        android:gravity="center"
+        android:textColor="@color/textcolor"
+        android:textColorHint="@color/textcolor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter password"
+        android:id="@+id/editetext_signinpassword"/>
+
+    <Button
+        android:textColor="@color/textcolor"
+        android:text="Sign In"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_signin"
         android:background="@color/background"/>
 
 </LinearLayout>
