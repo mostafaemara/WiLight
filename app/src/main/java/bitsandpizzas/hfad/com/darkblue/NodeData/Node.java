@@ -22,6 +22,35 @@ public class Node {
         this.mNodeName = mNodeName;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+
+
+
+        if(obj instanceof Node){
+            if(((Node) obj).mNodeId==this.mNodeId){
+
+
+                return  true;
+            }else{
+
+
+                return false;
+            }
+
+        }
+        else{
+
+            return false;
+        }
+
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public int getRelay1() {
         return relay1;
     }

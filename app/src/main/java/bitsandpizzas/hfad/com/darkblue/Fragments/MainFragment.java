@@ -410,7 +410,7 @@ boolean contain(Node mNode){
 
 
 
-if(!contain(node)) {
+if(!nodes.contains(node)) {
     nodes.add(node);
 }
 
