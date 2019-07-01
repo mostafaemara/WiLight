@@ -4,7 +4,7 @@
 
 
 
-Wilight is smart home light control system based on IOT using android + embedded c  with the following features
+Wilight is smart home light control system based on IOT using android + embedded c/c++  with the following features
 - cloud broker for remote access
 - local broker incase internet disconnected inside house 
 - android application support  esp touch technology offer easy way to setup WiFi Config
@@ -22,4 +22,26 @@ WiLight Is Android App to control home lights system based on iot,
 
 
 Wilight is built to connect with WiLight Hub to controll all Wilight Nodes,
+
+- WiLight Node Project
+
+
+
+https://github.com/mostafaemara/WILIGHTS_NODE
+
+
+- WiLight Hub Project
+
+
+
+
+
+
+
+
+
+
+
+
+https://github.com/mostafaemara/WILIGHTS_HUB
 
